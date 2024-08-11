@@ -6,15 +6,44 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ManageExpense from "./screens/ManageExpense";
 import RecentExPenses from "./screens/RecentExpenses";
 import AllExpenses from "./screens/AllExpenses";
+import { GlobalStyles } from "./constants/styles";
+import { Ionicons } from "@expo/vector-icons";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 function ExpenseOverview() {
   return (
-    <BottomTabs.Navigator>
-      <BottomTabs.Screen name="RecentExpenses" component={RecentExPenses} />
-      <BottomTabs.Screen name="AllExpenses" component={AllExpenses} />
+    <BottomTabs.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: GlobalStyles.Colors.primary500 },
+        headerTintColor: "white",
+        tabBarStyle: { backgroundColor: GlobalStyles.Colors.primary500 },
+        tabBarActiveTintColor: GlobalStyles.Colors.accent500,
+      }}
+    >
+      <BottomTabs.Screen
+        name="RecentExpenses"
+        component={RecentExPenses}
+        options={{
+          title: "Recent Expenses",
+          tabBarLabel: "Recent",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="hourglass" size={size} color={color} />
+          ),
+        }}
+      />
+      <BottomTabs.Screen
+        name="AllExpenses"
+        component={AllExpenses}
+        options={{
+          title: "All Expenses",
+          tabBarLabel: "All",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar" size={size} color={color} />
+          ),
+        }}
+      />
     </BottomTabs.Navigator>
   );
 }
@@ -25,7 +54,11 @@ export default function App() {
       <StatusBar style="auto" />
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="ExpensesOverview" component={ExpenseOverview} />
+          <Stack.Screen
+            name="ExpensesOverview"
+            component={ExpenseOverview}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="ManageExpense" component={ManageExpense} />
         </Stack.Navigator>
       </NavigationContainer>
