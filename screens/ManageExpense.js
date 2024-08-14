@@ -1,12 +1,15 @@
 import { Text, View, StyleSheet } from "react-native";
-import { useLayoutEffect } from "react";
+import { useContext, useLayoutEffect } from "react";
 import IconButton from "../components/ui/IconButton";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { GlobalStyles } from "../constants/styles";
 import Button from "../components/ui/Button";
 import { StackRouter } from "@react-navigation/native";
+import { ExpenseContext } from "../store/expenses-context";
 
 function ManageExpense({ route, navigation }) {
+  const expenseContext = useContext(ExpenseContext);
+
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
   useLayoutEffect(() => {
@@ -16,6 +19,7 @@ function ManageExpense({ route, navigation }) {
   }, [navigation.isEditing]);
 
   function deleteExpenseHandler() {
+    expenseContext.deleteExpense(editedExpenseId);
     navigation.goBack();
   }
   function confirmHandler() {
