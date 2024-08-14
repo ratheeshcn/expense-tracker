@@ -1,13 +1,16 @@
 import { View, Text, StyleSheet } from "react-native";
 
 import Input from "./Input";
+import Button from "../ui/Button";
+import { getFormattedDate } from "../../util/date";
+
 import { useState } from "react";
 
-function ExpenseForm() {
+function ExpenseForm({ submitButtonLabel, onSubmit, onCancel, defaultValues }) {
   const [inputValues, setInputValues] = useState({
-    amount: "",
-    date: "",
-    description: "",
+    amount: defaultValues ? defaultValues.amount.toString() : "",
+    date: defaultValues ? getFormattedDate(defaultValues.date) : "",
+    description: defaultValues ? defaultValues.description : "",
   });
 
   function inputChangeHandler(inputIdentifier, enteredValue) {
@@ -18,6 +21,17 @@ function ExpenseForm() {
       };
     });
   }
+
+  function submitHandler() {
+    const expenseData = {
+      amount: +inputValues.amount,
+      date: new Date(inputValues.date),
+      description: inputValues.description,
+    };
+
+    onSubmit(expenseData);
+  }
+
   return (
     <View style={styles.form}>
       <Text style={styles.title}>Your Expense</Text>
@@ -50,6 +64,14 @@ function ExpenseForm() {
           value: inputValues.description,
         }}
       />
+      <View style={styles.buttons}>
+        <Button style={styles.button} mode="flat" onPress={onCancel}>
+          Cancel
+        </Button>
+        <Button style={styles.button} onPress={submitHandler}>
+          {submitButtonLabel}
+        </Button>
+      </View>
     </View>
   );
 }
@@ -74,5 +96,14 @@ const styles = StyleSheet.create({
     color: "white",
     marginVertical: 24,
     textAlign: "center",
+  },
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  button: {
+    minWidth: 120,
+    marginHorizontal: 8,
   },
 });
