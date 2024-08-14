@@ -65,29 +65,27 @@ const DUMMY_EXPENSES = [
 
 export const ExpenseContext = createContext({
   expenses: [],
-  addExpense: ({ desciption, amount, date }) => {},
+  addExpense: ({ description, amount, date }) => {},
   deleteExpense: (id) => {},
-  updateExpense: (id, { desciption, amount, date }) => {},
+  updateExpense: (id, { description, amount, date }) => {},
 });
 
 function expensesReducer(state, action) {
   switch (action.type) {
     case "ADD":
-      const id = new Date.toString() + Math.random().toString();
-      return [{ ...action.payload }, ...state];
+      const id = new Date().toString() + Math.random().toString();
+      return [{ ...action.payload, id: id }, ...state];
     case "UPDATE":
       const updatableExpenseIndex = state.findIndex(
         (expense) => expense.id === action.payload.id
       );
-
-      const updatabaleExpense = state[updatableExpenseIndex];
-      const updatedItem = { ...updatabaleExpense, ...action.payload.data };
+      const updatableExpense = state[updatableExpenseIndex];
+      const updatedItem = { ...updatableExpense, ...action.payload.data };
       const updatedExpenses = [...state];
       updatedExpenses[updatableExpenseIndex] = updatedItem;
       return updatedExpenses;
-
     case "DELETE":
-      return state.filter(() => expense.id !== action.payload.id);
+      return state.filter((expense) => expense.id !== action.payload);
     default:
       return state;
   }
@@ -110,7 +108,7 @@ function ExpensesContextProvider({ children }) {
 
   const value = {
     expenses: expensesState,
-    addExpene: addExpense,
+    addExpense: addExpense,
     deleteExpense: deleteExpense,
     updateExpense: updateExpense,
   };
