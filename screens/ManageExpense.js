@@ -6,6 +6,7 @@ import { GlobalStyles } from "../constants/styles";
 import Button from "../components/ui/Button";
 import { StackRouter } from "@react-navigation/native";
 import { ExpenseContext } from "../store/expenses-context";
+import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 
 function ManageExpense({ route, navigation }) {
   const expenseContext = useContext(ExpenseContext);
@@ -27,13 +28,13 @@ function ManageExpense({ route, navigation }) {
       expenseContext.updateExpense(editedExpenseId, {
         description: "Test!!!!",
         amount: 29.99,
-        date: new Date("2022-05-20"),
+        date: new Date("2024-08-10"),
       });
     } else {
       expenseContext.addExpense({
         description: "Test",
         amount: 19.99,
-        date: new Date("2022-05-19"),
+        date: new Date("2024-08-08"),
       });
     }
     navigation.goBack();
@@ -45,6 +46,8 @@ function ManageExpense({ route, navigation }) {
 
   return (
     <View style={styles.container}>
+      <ExpenseForm />
+
       <View style={styles.buttons}>
         <Button style={styles.button} mode="flat" onPress={cancelHandler}>
           Cancel
