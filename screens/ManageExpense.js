@@ -1,11 +1,18 @@
 import { View, StyleSheet } from "react-native";
-import { useContext, useLayoutEffect } from "react";
+import { useContext, useState, useLayoutEffect } from "react";
 import IconButton from "../components/ui/IconButton";
 import { GlobalStyles } from "../constants/styles";
 import { ExpenseContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
+import { deleteExpense, storeExpense, updateExpense } from "../util/http";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
+import ErrorOverlay from "../components/ui/ErrorOverlay";
 
 function ManageExpense({ route, navigation }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [error, setError] = useState();
+
   const expenseContext = useContext(ExpenseContext);
 
   const editedExpenseId = route.params?.expenseId;
@@ -20,21 +27,49 @@ function ManageExpense({ route, navigation }) {
     });
   }, [navigation.isEditing]);
 
-  function deleteExpenseHandler() {
-    expenseContext.deleteExpense(editedExpenseId);
-    navigation.goBack();
-  }
-  function confirmHandler(expenseData) {
-    if (isEditing) {
-      expenseContext.updateExpense(editedExpenseId, expenseData);
-    } else {
-      expenseContext.addExpense(expenseData);
+  async function deleteExpenseHandler() {
+    setIsSubmitting(true);
+    try {
+      await deleteExpense(editedExpenseId);
+      expenseContext.deleteExpense(editedExpenseId);
+      navigation.goBack();
+    } catch (error) {
+      setError("Could not delete expense - please try again later!");
     }
-    navigation.goBack();
+  }
+
+  async function confirmHandler(expenseData) {
+    setIsSubmitting(true);
+    try {
+      if (isEditing) {
+        expenseContext.updateExpense(editedExpenseId, expenseData);
+        updateExpense(editedExpenseId, expenseData);
+      } else {
+        const id = await storeExpense(expenseData);
+        expenseContext.addExpense({ ...expenseData, id: id });
+      }
+
+      navigation.goBack();
+    } catch (error) {
+      setError("could not save data - please try agian later");
+      setIsSubmitting(false);
+    }
   }
 
   function cancelHandler() {
     navigation.goBack();
+  }
+
+  function errorHandler() {
+    setError(null);
+  }
+
+  if (error && !isSubmitting) {
+    return <ErrorOverlay message={error} confirm={errorHandler} />;
+  }
+
+  if (isSubmitting) {
+    return <LoadingOverlay />;
   }
 
   return (
